@@ -6,7 +6,7 @@
 #include <EEPROM.h>
 
 RTC_DS3231 rtc;
-LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 int wakeHour = EEPROM.read(0);
 int wakeMinute = EEPROM.read(1);
 
@@ -30,7 +30,7 @@ void setup() {
   pinMode(7, INPUT_PULLUP);
   pinMode(6, INPUT_PULLUP);
   Wire.begin();
-  lcd.begin(16, 2);
+  lcd.init();
   lcd.backlight();
   Alarm.alarmRepeat(wakeHour, wakeMinute, 0, wakeAlarm);
 }
