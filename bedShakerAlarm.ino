@@ -75,29 +75,29 @@ void loop() {
     lcd.print(wakeMinute);
   }
   
-  if(buttonPressedHour(12)) {
+  if(buttonPressed(12)) {
     if(wakeHour < 23) {
       wakeHour++;
     } 
   }
-  if(buttonPressedHour(11)) {
+  if(buttonPressed(11)) {
     if(0 < wakeHour) {
       wakeHour--;
     } 
   }
 
-  if(buttonPressedMinute(10)) {
+  if(buttonPressed(10)) {
     if(wakeMinute < 59) {
       wakeMinute++;
     } 
   }
-  if(buttonPressedMinute(9)) {
+  if(buttonPressed(9)) {
     if(0 < wakeMinute) {
       wakeMinute--;
     } 
   }
 
-  if (buttonPressedConfirm(8)) {
+  if (buttonPressed(8)) {
     EEPROM.update(0, wakeHour);
     EEPROM.update(1, wakeMinute);
     setup();
@@ -115,13 +115,13 @@ void wakeAlarm() {
     digitalWrite(3, HIGH);
     int randomNumber = rand() % 11;
     int randomTime = randomNumber * 1000;
-    if (buttonPressedSnooze(7)) {
+    if (buttonPressed(7)) {
       digitalWrite(3, LOW);
       delay(randomTime);
       digitalWrite(3, HIGH);
     } 
     
-    if (buttonPressedStop(6)) {
+    if (buttonPressed(6)) {
       digitalWrite(3, LOW);
       break;
     }
@@ -129,52 +129,12 @@ void wakeAlarm() {
 }
 
 
-int buttonPressedHour(uint8_t buttonHour) {
-  static uint16_t lastStatesHour = 0;
-  uint8_t stateHour = digitalRead(buttonHour);
-  if (stateHour != ((lastStatesHour >> buttonHour) & 1)) {
-    lastStatesHour ^= 1 << buttonHour;
-    return stateHour == HIGH;
-  }
-  return false;
-}
-
-int buttonPressedMinute(uint8_t buttonMinute) {
-  static uint16_t lastStatesMinute = 0;
-  uint8_t stateMinute = digitalRead(buttonMinute);
-  if (stateMinute != ((lastStatesMinute >> buttonMinute) & 1)) {
-    lastStatesMinute ^= 1 << buttonMinute;
-    return stateMinute == HIGH;
-  }
-  return false;
-}
-
-int buttonPressedSnooze(uint8_t buttonSnooze) {
-  static uint16_t lastStatesSnooze = 0;
-  uint8_t stateSnooze = digitalRead(buttonSnooze);
-  if (stateSnooze != ((lastStatesSnooze >> buttonSnooze) & 1)) {
-    lastStatesSnooze ^= 1 << buttonSnooze;
-    return stateSnooze == HIGH;
-  }
-  return false;
-}
-
-int buttonPressedStop(uint8_t buttonStop) {
-  static uint16_t lastStatesStop = 0;
-  uint8_t stateStop = digitalRead(buttonStop);
-  if (stateStop != ((lastStatesStop >> buttonStop) & 1)) {
-    lastStatesStop ^= 1 << buttonStop;
-    return stateStop == HIGH;
-  }
-  return false;
-}
-
-int buttonPressedConfirm(uint8_t buttonConfirm) {
-  static uint16_t lastStatesConfirm = 0;
-  uint8_t stateConfirm = digitalRead(buttonConfirm);
-  if (stateConfirm != ((lastStatesConfirm >> buttonConfirm) & 1)) {
-    lastStatesConfirm ^= 1 << buttonConfirm;
-    return stateConfirm == HIGH;
+int buttonPressed(uint8_t button) {
+  static uint16_t lastStates = 0;
+  uint8_t state = digitalRead(button);
+  if (state != ((lastStates >> button) & 1)) {
+    lastStates ^= 1 << button;
+    return state == HIGH;
   }
   return false;
 }
