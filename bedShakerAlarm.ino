@@ -7,7 +7,7 @@
 
 RTC_DS3231 rtc;
 LiquidCrystal_I2C lcd(0x27, 16, 2);
-int wakeHour = EEPROM.read(0);
+int wakeHour = EEPROM.read(2);
 int wakeMinute = EEPROM.read(1);
 
 uint32_t syncProvider()
@@ -98,7 +98,7 @@ void loop() {
   }
 
   if (buttonPressed(8)) {
-    EEPROM.update(0, wakeHour);
+    EEPROM.update(2, wakeHour);
     EEPROM.update(1, wakeMinute);
     setup();
     digitalWrite(13, HIGH);   
