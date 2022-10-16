@@ -1,5 +1,4 @@
 #include <TimeLib.h>
-#include <TimeAlarms.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 #include "RTClib.h"
@@ -9,14 +8,16 @@ RTC_DS3231 rtc;
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 int wakeHour = EEPROM.read(2);
 int wakeMinute = EEPROM.read(1);
+int wakeSecond = 0;
 
-uint32_t syncProvider()
+time_t syncProvider()
 {
   return rtc.now().unixtime();
 }
 
 void setup() {
   rtc.begin();
+  setSyncProvider(syncProvider);
 //  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   DateTime now = rtc.now();
   setTime(now.hour(), now.minute(), now.second(), now.month(), now.day(), now.year());
@@ -32,12 +33,10 @@ void setup() {
   Wire.begin();
   lcd.init();
   lcd.backlight();
-  Alarm.alarmRepeat(wakeHour, wakeMinute, 0, wakeAlarm);
 }
 
 void loop() {
   DateTime now = rtc.now();
-  Alarm.delay(1000); 
   lcd.setCursor(0,0);
   lcd.print("Time: ");
   lcd.print(now.hour());
@@ -103,27 +102,17 @@ void loop() {
     setup();
     digitalWrite(13, HIGH);   
     delay(100);              
-    digitalWrite(13, LOW);   
-    
+    digitalWrite(13, LOW);    
   }
-}
 
-void wakeAlarm() {
-  const int stopAlarmButton = digitalRead(6);
-  const int snoozeAlarmButton = digitalRead(7);
-  while (true) {
-    digitalWrite(3, HIGH);
-    int randomNumber = rand() % 11;
-    int randomTime = randomNumber * 1000;
-    if (buttonPressed(7)) {
-      digitalWrite(3, LOW);
-      delay(randomTime);
+  if (now.hour() == wakeHour && now.minute() == wakeMinute && now.second() == wakeSecond) {
+    while(true) {
       digitalWrite(3, HIGH);
-    } 
-    
-    if (buttonPressed(6)) {
-      digitalWrite(3, LOW);
-      break;
+      
+      if (buttonPressed(6)) {
+        digitalWrite(3, LOW);
+        break;
+      }
     }
   }
 }
